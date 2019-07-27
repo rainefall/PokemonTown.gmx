@@ -37,6 +37,7 @@ paused=false;
 pauseUI = 0;
 animatePause = 0;
 pauseindex=-1;
+confirmindex=-1;
 selcount=0;
 // i hate myself
 iamsureaboutthat=false;
@@ -187,10 +188,29 @@ if !paused {
         selcount -= 360;
     selcount += 4;
     
-    var icons = pauseUI[? "options"]
-    var num_icons = ds_list_size(icons);
+    var options = pauseUI[? "options"]
     if areyousureaboutthat {
         // confirm the player wants to quit
+        confirmindex = -1
+        if window_mouse_get_y() &gt; window_get_height()/2 &amp;&amp; window_mouse_get_y() &lt; window_get_height()/2 + 24 {
+            if window_mouse_get_x() &gt; window_get_width()/2-64-string_width("Yes") &amp;&amp; window_get_width()/2-64+string_width("Yes") {
+                confirmindex = 0;
+            }
+            if window_mouse_get_x() &gt; window_get_width()/2+64-string_width("No") &amp;&amp; window_get_width()/2+64+string_width("No") {
+                confirmindex = 1;
+            }
+            
+            if mouse_check_button_pressed(mb_left) &amp;&amp; confirmindex &gt;= 0 {
+                if confirmindex == 0 {
+                    iamsureaboutthat = true;
+                    // do something depending on which icon is selected
+                    animatePause = -1;
+                    script_execute(asset_get_index("uiScr_"+options[| pauseindex]));
+                } else {
+                    areyousureaboutthat = false;
+                }
+            }
+        }
     } else {
         pauseindex = -1
         if window_mouse_get_x() &gt; 480-string_width("Load Game")*2 &amp;&amp; window_mouse_get_x() &lt; 480+string_width("Load Game") {
@@ -203,7 +223,7 @@ if !paused {
             if pauseindex &gt;= 0 &amp;&amp; mouse_check_button_pressed(mb_left) {
                 // do something depending on which icon is selected
                 animatePause = -1;
-                script_execute(asset_get_index("uiScr_"+pauseindex));
+                script_execute(asset_get_index("uiScr_"+options[| pauseindex]));
             }
         }
         
@@ -218,8 +238,8 @@ if !paused {
                 animatePause = 0;
                 gameManager.constructionTimeAgain = false;
                 gameManager.buildingMenuActive = false;
-                obj_building.showHealthbar = true;
-                obj_trainer.showHealthbar = true;
+                //obj_building.showHealthbar = true;
+                //obj_trainer.showHealthbar = true;
                 ds_map_destroy(pauseUI);
                 paused = false;
             }
@@ -285,7 +305,6 @@ draw_set_alpha(1);
 
 // pause menu
 if paused &amp;&amp; ds_exists(pauseUI, ds_type_map) {
-    var options = pauseUI[? "options"];
     // overlay
     draw_set_alpha(pauseUI[? "alpha"]/2);
     draw_set_color(c_black);
@@ -293,13 +312,22 @@ if paused &amp;&amp; ds_exists(pauseUI, ds_type_map) {
     draw_set_alpha(pauseUI[? "alpha"]);
     draw_set_color(c_white);
     
-    for (var i = 0; i &lt; ds_list_size(options); i++) {
-        var txt = chr(ord(options[| i])-32) + string_copy(options[| i],2,string_length(options[| i])-1);
-        draw_text_transformed(window_get_width()/2-string_width(txt), window_get_height()/2-26*ds_list_size(options)+i*26, txt, 2, 2, 1);
+    if areyousureaboutthat {
+        draw_text_transformed(window_get_width()/2-string_width("Are you sure you want to exit?#Unsaved progress will be lost!"),window_get_height()/2-64,"Are you sure you want to exit?#Unsaved progress will be lost!",2,2,0);
+        draw_text_transformed(window_get_width()/2-64-string_width("Yes"),window_get_height()/2,"Yes",2,2,0);
+        draw_text_transformed(window_get_width()/2+64-string_width("No"),window_get_height()/2,"No",2,2,0);
+        if confirmindex &gt;= 0
+            draw_sprite(ui_sel,0,window_get_width()/2-64+string_width("Yes")+8+dsin(selcount)*4+128*confirmindex,window_get_height()/2+6);
+    } else {
+        var options = pauseUI[? "options"];
+        for (var i = 0; i &lt; ds_list_size(options); i++) {
+            var txt = chr(ord(options[| i])-32) + string_copy(options[| i],2,string_length(options[| i])-1);
+            draw_text_transformed(window_get_width()/2-string_width(txt), window_get_height()/2-26*ds_list_size(options)+i*26, txt, 2, 2, 1);
+        }
+        
+        if pauseindex &gt;= 0
+            draw_sprite(ui_sel,0,window_get_width()/2+string_width(options[| pauseindex])+8+dsin(selcount)*4,window_get_height()/2-26*ds_list_size(options)+pauseindex*26+6);
     }
-    
-    if pauseindex &gt;= 0
-        draw_sprite(ui_sel,0,window_get_width()/2+string_width(options[| pauseindex])+4+dsin(selcount)*4,window_get_height()/2-26*ds_list_size(options)+pauseindex*26);
     
     draw_set_alpha(1);
 }

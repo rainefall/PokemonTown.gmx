@@ -47,32 +47,6 @@ tick = 0;
         </arguments>
       </action>
     </event>
-    <event eventtype="1" enumb="0">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>ds_map_destroy(saveFile);
-ds_map_destroy(loopTable);
-ds_map_destroy(buildingdata);
-ds_map_destroy(pokedata);
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
     <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
@@ -115,12 +89,12 @@ if room == rm_game {
         audio_sound_set_track_position(currentSong,290);
     }
     
-    if mouse_check_button_pressed(mb_left) &amp;&amp; !buildMode {
+    if mouse_check_button_pressed(mb_left) &amp;&amp; !buildMode &amp;&amp; !obj_ui_game.paused {
         selection = get_instance_mouse_over(obj_building);
         if selection == noone selection = get_instance_mouse_over(obj_trainer);
     }
     
-    if keyboard_check_pressed(ord("B")) {
+    if keyboard_check_pressed(ord("B")) &amp;&amp; !obj_ui_game.paused &amp;&amp; !buildingMenuActive {
         if !buildMode {
             buildMode = true;
             constructionTimeAgain = true;
@@ -135,6 +109,32 @@ if room == rm_game {
     tick += 1;
 }
 
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="3">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>ds_map_destroy(saveFile);
+ds_map_destroy(loopTable);
+ds_map_destroy(buildingdata);
+ds_map_destroy(pokedata);
 </string>
           </argument>
         </arguments>
@@ -157,9 +157,7 @@ if room == rm_game {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if currentSong != -1
-draw_text(256,256,audio_sound_get_track_position(currentSong));
-</string>
+            <string></string>
           </argument>
         </arguments>
       </action>

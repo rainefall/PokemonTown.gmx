@@ -162,6 +162,7 @@ if showBuildingSettings {
         if sel[? "scale"] == 0 {
             animateBuildingSettings = 0;
             showBuildingSettings = false;
+            showHealthbar = true;
             ds_map_destroy(buildingUI);
             gameManager.buildingMenuActive = false;
             obj_camera.target_x = previousCameraX;
@@ -225,7 +226,7 @@ if moving {
             <string>var gui_x = window_get_width()/2 + screen_x*3
 var gui_y = window_get_height()/2 + screen_y*3
 // draw healthbar if moused over
-if showHealthbar {
+if showHealthbar &amp;&amp; !obj_ui_game.paused {
     if instance_mouse_over() {
         draw_healthbar(gui_x-32, gui_y-1/obj_camera.z*sprite_height*3-4, gui_x+32, gui_y-1/obj_camera.z*sprite_height*3+4, hp/maxhp*100, c_black, c_red, c_lime, 0, true, true)
     }

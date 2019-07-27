@@ -122,6 +122,7 @@ post=noone
             if sel[? "scale"] == 0 {
                 animateTrainerSettings = 0;
                 showTrainerSettings = false;
+                showHealthbar = true;
                 ds_map_destroy(trainerUI);
                 gameManager.buildingMenuActive = false;
                 obj_camera.target_x = previousCameraX;
@@ -185,7 +186,7 @@ post=noone
           <argument>
             <kind>1</kind>
             <string>// draw healthbar if moused over
-if showHealthbar {
+if showHealthbar &amp;&amp; !obj_ui_game.paused {
     if instance_mouse_over() {
         var gui_x = window_get_width()/2 + screen_x*3
         var gui_y = window_get_height()/2 + screen_y*3

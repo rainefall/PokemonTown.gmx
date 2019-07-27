@@ -38,7 +38,7 @@ u_width = shader_get_uniform(shd_outline, "pixelW");
         </arguments>
       </action>
     </event>
-    <event eventtype="1" enumb="0">
+    <event eventtype="7" enumb="3">
       <action>
         <libid>1</libid>
         <id>603</id>
