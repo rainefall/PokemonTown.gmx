@@ -1,0 +1,2 @@
+showHealthbar = true;
+active = false;
