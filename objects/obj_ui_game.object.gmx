@@ -46,8 +46,8 @@ gp_buildindex = 1;
 iamsureaboutthat=false;
 areyousureaboutthat=false;
 
-headsuptext="uwu owo uwu owo uwu owo uwu owo uwu owo uwu owo uwu owo";
-headsupalpha=1.0;
+headsuptext="";
+headsupalpha=0.0;
 </string>
           </argument>
         </arguments>
@@ -95,11 +95,12 @@ headsupalpha=1.0;
           <argument>
             <kind>1</kind>
             <string>// animate error message
-if cantbuildalpha &gt; 0 {
+if cantbuildalpha &gt; 0 
     cantbuildalpha -= 0.05;
-}
 if gamesavedalpha &gt; 0
     gamesavedalpha -= 3 / room_speed;
+if headsupalpha &gt; 0
+    headsupalpha -= 10 / room_speed
     
 // animate money counter
 if townData.money &gt; displayedmoney {
@@ -374,7 +375,7 @@ draw_set_alpha(cantbuildalpha);
 draw_text(window_mouse_get_x()-string_width(cantbuildreason)/2, window_mouse_get_y()-12, cantbuildreason);
 
 draw_set_halign(fa_center);
-draw_set_alpha(headsupalpha*dsin(get_timer()/10000));
+draw_set_alpha(clamp(headsupalpha,0.0,1.0)*dsin(get_timer()/10000));
 draw_text_ext_transformed(window_get_width()/2,4,headsuptext,-1,256,2,2,0);
 draw_set_alpha(1);
 draw_set_halign(fa_left);

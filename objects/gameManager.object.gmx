@@ -62,6 +62,36 @@ if os_is_network_connected() get = http_get("https://pastebin.com/raw/tWQGPhkK")
         </arguments>
       </action>
     </event>
+    <event eventtype="2" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Change game state
+if state == gamestate_rts {
+    townbuildMode();
+    alarm[0] = irandom_range(room_speed*300,room_speed*600);
+} else if state == gamestate_build {
+    rtsMode();
+    alarm[0] = irandom_range(room_speed*60,room_speed*240);
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
@@ -79,13 +109,7 @@ if os_is_network_connected() get = http_get("https://pastebin.com/raw/tWQGPhkK")
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//if saveFile == 0 {
-    //saveFile = loadSave("toby.pktsav");
-    
-    //room_goto(rm_game);
-//}
-
-if currentSong != -1 {
+            <string>if currentSong != -1 {
     if ds_map_exists(loopTable, audio_get_name(currentSong)) {
         var songLoops = loopTable[? audio_get_name(currentSong)];
         var currentPosition = audio_sound_get_track_position(currentSong)

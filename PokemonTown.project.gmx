@@ -199,6 +199,7 @@
         <script>scripts\uiScr_menu.gml</script>
         <script>scripts\uiScr_exit.gml</script>
       </scripts>
+      <script>scripts\setHeadsUpText.gml</script>
     </scripts>
     <scripts name="Buildings">
       <scripts name="Initialization">
@@ -215,6 +216,8 @@
     <scripts name="ExecuteShell">
       <script>scripts\ExecuteShell.gml</script>
     </scripts>
+    <script>scripts\townbuildMode.gml</script>
+    <script>scripts\rtsMode.gml</script>
   </scripts>
   <shaders name="shaders">
     <shader type="GLSLES">shaders\shd_blur.shader</shader>
