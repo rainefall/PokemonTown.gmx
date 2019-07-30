@@ -27,7 +27,7 @@ if active {
             } else {
                 // "battle"
                 if irandom(10) != 6 {
-                    target.hp -= 2;
+                    target.hp -= 12 / target.data[? "def"] * 30;
                 }
             }
         }

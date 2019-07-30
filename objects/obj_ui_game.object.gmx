@@ -39,9 +39,15 @@ animatePause = 0;
 pauseindex=-1;
 confirmindex=-1;
 selcount=0;
+gamesavedalpha=0.0;
+
+gp_buildindex = 1;
 // i hate myself
 iamsureaboutthat=false;
 areyousureaboutthat=false;
+
+headsuptext="uwu owo uwu owo uwu owo uwu owo uwu owo uwu owo uwu owo";
+headsupalpha=1.0;
 </string>
           </argument>
         </arguments>
@@ -92,6 +98,9 @@ areyousureaboutthat=false;
 if cantbuildalpha &gt; 0 {
     cantbuildalpha -= 0.05;
 }
+if gamesavedalpha &gt; 0
+    gamesavedalpha -= 3 / room_speed;
+    
 // animate money counter
 if townData.money &gt; displayedmoney {
     displayedmoney++;
@@ -117,15 +126,35 @@ if !paused {
         for (var i = 1; i &lt; ds_list_size(ids); i++) {
             if keyboard_check_pressed(48+i) {
                 sel = gameManager.buildingdata[? ids[| i]];
-                lower_left_text = sel[? "name"];
+                lower_left_text = sel[? "name"]+"#Cost: "+string(sel[? "cost"]);
                 buildingbuilding = ids[| i];
             }
         }
+        
+        // gamepad select building
+        if gamepad_is_connected(0) {
+            if gamepad_button_check_pressed(0,gp_padl) &amp;&amp; gp_buildindex &gt; 1
+                gp_buildindex--;
+            if gamepad_button_check_pressed(0,gp_padr) &amp;&amp; gp_buildindex &lt; ds_list_size(ids)-1
+                gp_buildindex++;
+            buildingbuilding = ids[| gp_buildindex];
+            sel = gameManager.buildingdata[? ids[| gp_buildindex]];
+                lower_left_text = sel[? "name"]+"#Cost: "+string(sel[? "cost"]);
+        }
+        
+        // rotate building gamepad edition
+        if gamepad_button_check(0,gp_shoulderl) {
+            targetangle -= 10;
+        }
+        if gamepad_button_check(0,gp_shoulderr) {
+            targetangle += 10;
+        }
+          
         // mouse select building
         if window_mouse_get_y() &gt; window_get_height()-64 &amp;&amp; window_mouse_get_x() &gt; 200 &amp;&amp; window_mouse_get_x() &lt; 760 {
             var build_index = clamp(floor((window_mouse_get_x()-200)/48)+1, 1, ds_list_size(gameManager.buildingdata[? "ids"])-1);
             sel = gameManager.buildingdata[? ids[| build_index]];
-            lower_left_text = sel[? "name"];
+                lower_left_text = sel[? "name"]+"#Cost: "+string(sel[? "cost"]);
             if mouse_check_button_pressed(mb_left) {
                 buildingbuilding = ids[| build_index];
             }
@@ -133,13 +162,49 @@ if !paused {
             if buildingbuilding = 0
                 lower_left_text = "Build Mode";
             // build time
-            if mouse_check_button_pressed(mb_left) {
+            if mouse_check_button_pressed(mb_left) &amp;&amp; buildingbuilding != 0 {
                 // if the building doesnt collide
                 if !collision_circle(mouse_get_room_x(), mouse_get_room_y(), sprite_get_width(asset_get_index("spr_"+buildingbuilding))/2,obj_worldObject,false,true) {
                     var dat =gameManager.buildingdata[? buildingbuilding];
                     if townData.money - dat[? "cost"] &gt;= 0 {
                         townData.money -= dat[? "cost"];
                         var inst = instance_create(mouse_get_room_x(), mouse_get_room_y(), obj_building);
+                        inst.direction = targetangle
+                        inst.data = dat
+                        inst.maxhp = inst.data[? "hp"];
+                        inst.hp = inst.maxhp;
+                        inst.sprite_index = asset_get_index("spr_"+buildingbuilding);
+                        if script_exists(asset_get_index("init_"+buildingbuilding)) {
+                            with inst
+                                script_execute(asset_get_index("init_"+data[? "id"]));
+                        }
+                        // add to map of buildings
+                        var objs = gameManager.saveFile[? "objects"]
+                        var tempbuilding = ds_map_create();
+                        tempbuilding[? "type"] = buildingbuilding;
+                        tempbuilding[? "x"] = inst.x;
+                        tempbuilding[? "y"] = inst.y;
+                        tempbuilding[? "angle"] = targetangle;
+                        tempbuilding[? "hp"] = inst.hp;
+                        ds_list_add(objs,tempbuilding);
+                        ds_list_mark_as_map(objs,ds_list_size(objs)-1);
+                    } else {
+                        // not enough money
+                        cantbuildalpha = 1.0;
+                        cantbuildreason = "Not enough money!";
+                    }
+                } else {
+                    // can't build that there!
+                    cantbuildalpha = 1.0;
+                    cantbuildreason = "Can't build that here!";
+                }
+            } else if gamepad_is_connected(0) &amp;&amp; gamepad_button_check_pressed(0,gp_face3) {
+                // if the building doesnt collide
+                if !collision_circle(screen_to_world_x(gameManager.gp_cursorx/3,gameManager.gp_cursory/3), screen_to_world_y(gameManager.gp_cursorx/3,gameManager.gp_cursory/3), sprite_get_width(asset_get_index("spr_"+buildingbuilding))/2,obj_worldObject,false,true) {
+                    var dat = gameManager.buildingdata[? buildingbuilding];
+                    if townData.money - dat[? "cost"] &gt;= 0 {
+                        townData.money -= dat[? "cost"];
+                        var inst = instance_create(screen_to_world_x(gameManager.gp_cursorx/3,gameManager.gp_cursory/3), screen_to_world_y(gameManager.gp_cursorx/3,gameManager.gp_cursory/3), obj_building);
                         inst.direction = targetangle
                         inst.data = dat
                         inst.maxhp = inst.data[? "hp"];
@@ -271,6 +336,12 @@ if !paused {
             <string>/// draw UI 
 // set font
 draw_set_font(fnt_ui);
+
+// gamepad cursor
+if gamepad_is_connected(0) &amp;&amp; !gameManager.buildMode {
+    draw_sprite_ext(ui_gpCursor,0,gameManager.gp_cursorx,gameManager.gp_cursory,2,2,0,c_white,1);
+}
+
 // boxes
 draw_sprite(ui_pause, 0, 960, 0);
 draw_sprite(ui_lower, 0, 0, 540);
@@ -301,7 +372,12 @@ for (var i = 1; i &lt; ds_list_size(ids); i++) {
 // can't build that!
 draw_set_alpha(cantbuildalpha);
 draw_text(window_mouse_get_x()-string_width(cantbuildreason)/2, window_mouse_get_y()-12, cantbuildreason);
+
+draw_set_halign(fa_center);
+draw_set_alpha(headsupalpha*dsin(get_timer()/10000));
+draw_text_ext_transformed(window_get_width()/2,4,headsuptext,-1,256,2,2,0);
 draw_set_alpha(1);
+draw_set_halign(fa_left);
 
 // pause menu
 if paused &amp;&amp; ds_exists(pauseUI, ds_type_map) {
@@ -329,6 +405,11 @@ if paused &amp;&amp; ds_exists(pauseUI, ds_type_map) {
             draw_sprite(ui_sel,0,window_get_width()/2+string_width(options[| pauseindex])+8+dsin(selcount)*4,window_get_height()/2-26*ds_list_size(options)+pauseindex*26+6);
     }
     
+    if gamesavedalpha &gt; 0 {
+        draw_set_alpha(clamp(gamesavedalpha,0,1));
+        draw_text_transformed(window_get_width()/2-string_width("Game saved!")*1.5,window_get_height()/2+96,"Game saved!",3,3,0);
+    }        
+
     draw_set_alpha(1);
 }
 
@@ -359,7 +440,11 @@ draw_set_font(-1);
             <string>// ghost building
 if gameManager.buildMode {
     if buildingbuilding != 0 {
-        draw_model_perspective(asset_get_index("spr_"+buildingbuilding),window_views_mouse_get_x(),window_views_mouse_get_y(),targetangle,1,0.5);
+        if gamepad_is_connected(0) {
+            draw_model_perspective(asset_get_index("spr_"+buildingbuilding),gameManager.gp_cursorx/3,gameManager.gp_cursory/3,targetangle,1,0.5);
+       } else {
+            draw_model_perspective(asset_get_index("spr_"+buildingbuilding),window_views_mouse_get_x(),window_views_mouse_get_y(),targetangle,1,0.5);
+       } 
     }
 }
 </string>

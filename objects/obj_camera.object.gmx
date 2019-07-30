@@ -86,7 +86,7 @@ angle = lerp(angle,target_direction,0.1);
 wy = window_views_mouse_get_y(); 
 
 if !gameManager.buildingMenuActive {
-    // Keyboard Input (move camera around)
+    // Keyboard(move camera around)
     if keyboard_check(ord('Q')) {
         target_direction += 2.5*move_speed
     }
@@ -122,6 +122,15 @@ if !gameManager.buildingMenuActive {
         target_x += dsin(angle)*(wy - last_mouse_y)*z;
     }
     
+    if !gameManager.buildMode {
+        if gamepad_button_check(0,gp_shoulderl) {
+            target_direction += 2.5*move_speed
+        }
+        if gamepad_button_check(0,gp_shoulderr) {
+            target_direction -= 2.5*move_speed
+        }
+    }
+        
     // Mouse Input (move camera up and down)
     if gameManager.buildMode {
         if !keyboard_check(vk_shift) {
@@ -180,6 +189,13 @@ if !gameManager.buildingMenuActive {
     if keyboard_check(ord('W')) {
         target_y -= dcos(angle)*move_speed*z;
         target_x += dsin(angle)*move_speed*z;
+    }
+    
+    // Gamepad move camera up/down/left/right
+    var stickdir = point_direction(0,0,gamepad_axis_value(0,gp_axislh),gamepad_axis_value(0,gp_axislv));
+    if gamepad_axis_value(0,gp_axislh) != 0 &amp;&amp; gamepad_axis_value(0,gp_axislv) != 0 {
+        target_y+=lengthdir_y(move_speed,stickdir-angle);
+        target_x+=lengthdir_x(move_speed,stickdir-angle);
     }
     
     if !gameManager.buildMode {

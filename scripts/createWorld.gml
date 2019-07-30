@@ -2,39 +2,44 @@
 
 saveFile = json_decode('
 {
-"playtime": 0,
-"employed": 0,
-"trainers": 0,
-"level": 1,
-"experience": 0,
-"money": 1000,
-"savename": "",
-"worldtype":"forest",
-"objects": [{
-"id": 0,
-"type": "townHall",
-"x": 512,
-"y": 512,
-"hp": 1000
-},
-{
-"id": 2,
-"type": "houseSmall",
-"x": 512,
-"y": 480,
-"hp": 100,
-}
-],
-"spawners":[
-    {
-        "x":128,
-        "y":256,
-        "pokemon":[
-            "graveler",
-            "geodude"
-        ]
-    }
-]
+    "state":0,
+    "gamemode": 0,
+    "playtime": 0,
+    "employed": 0,
+    "trainers": 0,
+    "level": 1,
+    "experience": 0,
+    "money": 1000,
+    "savename": "",
+    "worldtype":"forest",
+    "objects": [
+        {
+            "id": 0,
+            "type": "townHall",
+            "x": 512,
+            "y": 512,
+            "hp": 1000,
+            "angle": 0
+        },
+        {
+            "id": 2,
+            "type": "houseSmall",
+            "x": 512,
+            "y": 480,
+            "hp": 100,
+            "angle": 0
+        }
+    ],
+    "spawners":[
+        {
+            "x":128,
+            "y":256,
+            "pokemon":[
+                "graveler",
+                "geodude"
+            ]
+        }
+    ]
 }')
 
 if (saveFile[? "worldtype"] == "forest") {

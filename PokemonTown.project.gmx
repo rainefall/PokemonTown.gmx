@@ -3,24 +3,7 @@
   <Configs name="configs">
     <Config>Configs\Default</Config>
   </Configs>
-  <datafiles number="7" name="datafiles">
-    <datafile>
-      <name>example.txt</name>
-      <exists>-1</exists>
-      <size>12</size>
-      <exportAction>2</exportAction>
-      <exportDir></exportDir>
-      <overwrite>0</overwrite>
-      <freeData>-1</freeData>
-      <removeEnd>0</removeEnd>
-      <store>0</store>
-      <ConfigOptions>
-        <Config name="Default">
-          <CopyToMask>9223372036854775807</CopyToMask>
-        </Config>
-      </ConfigOptions>
-      <filename>example.txt</filename>
-    </datafile>
+  <datafiles number="8" name="datafiles">
     <datafile>
       <name>ExecuteShell.dll</name>
       <exists>-1</exists>
@@ -33,7 +16,7 @@
       <store>0</store>
       <ConfigOptions>
         <Config name="Default">
-          <CopyToMask>9223372036854775807</CopyToMask>
+          <CopyToMask>1048640</CopyToMask>
         </Config>
       </ConfigOptions>
       <filename>ExecuteShell.dll</filename>
@@ -50,7 +33,7 @@
       <store>0</store>
       <ConfigOptions>
         <Config name="Default">
-          <CopyToMask>9223372036854775807</CopyToMask>
+          <CopyToMask>67108866</CopyToMask>
         </Config>
       </ConfigOptions>
       <filename>ExecuteShell.dylib</filename>
@@ -67,10 +50,27 @@
       <store>0</store>
       <ConfigOptions>
         <Config name="Default">
-          <CopyToMask>9223372036854775807</CopyToMask>
+          <CopyToMask>134217856</CopyToMask>
         </Config>
       </ConfigOptions>
       <filename>ExecuteShell.so</filename>
+    </datafile>
+    <datafile>
+      <name>Updater.exe</name>
+      <exists>-1</exists>
+      <size>9728</size>
+      <exportAction>2</exportAction>
+      <exportDir></exportDir>
+      <overwrite>0</overwrite>
+      <freeData>-1</freeData>
+      <removeEnd>0</removeEnd>
+      <store>0</store>
+      <ConfigOptions>
+        <Config name="Default">
+          <CopyToMask>1048640</CopyToMask>
+        </Config>
+      </ConfigOptions>
+      <filename>Updater.exe</filename>
     </datafile>
   </datafiles>
   <NewExtensions/>
@@ -79,6 +79,8 @@
       <sound>sound\mus_tea</sound>
       <sound>sound\mus_titles</sound>
       <sound>sound\mus_village_1</sound>
+      <sound>sound\mus_village_2</sound>
+      <sound>sound\mus_village_3</sound>
       <sound>sound\mus_night</sound>
     </sounds>
   </sounds>
@@ -97,6 +99,8 @@
       <sprite>sprites\ui_crosshair</sprite>
       <sprite>sprites\ui_construction</sprite>
       <sprite>sprites\ui_sel</sprite>
+      <sprite>sprites\ui_gpCursor</sprite>
+      <sprite>sprites\ui_logo</sprite>
     </sprites>
     <sprite>sprites\spr_tree</sprite>
     <sprite>sprites\spr_placeholder</sprite>
@@ -114,6 +118,8 @@
   <backgrounds name="background">
     <background>background\tmap_forest</background>
     <background>background\bg_grass</background>
+    <background>background\bg_tsClouds</background>
+    <background>background\bg_ts</background>
   </backgrounds>
   <paths name="paths"/>
   <scripts name="scripts">
@@ -125,6 +131,7 @@
       <script>scripts\graphics_update.gml</script>
       <script>scripts\draw_model.gml</script>
       <script>scripts\draw_model_perspective.gml</script>
+      <script>scripts\draw_text_transformed_shadow.gml</script>
     </scripts>
     <scripts name="Input">
       <script>scripts\keyboard_axis_x.gml</script>
@@ -136,24 +143,27 @@
       <script>scripts\mouse_get_room_x.gml</script>
       <script>scripts\mouse_get_room_y.gml</script>
       <script>scripts\mouse_press_rect.gml</script>
+      <script>scripts\get_instance_gpcursor_over.gml</script>
     </scripts>
     <scripts name="Save/Load">
       <script>scripts\loadSave.gml</script>
-      <script>scripts\initializeRoom.gml</script>
       <script>scripts\saveGame.gml</script>
       <script>scripts\listSaveFiles.gml</script>
     </scripts>
     <scripts name="Audio">
-      <script>scripts\playMusic.gml</script>
-      <script>scripts\stopMusic.gml</script>
-      <script>scripts\fadeoutMusic.gml</script>
-      <script>scripts\fadeinMusic.gml</script>
+      <script>scripts\playBGM.gml</script>
+      <script>scripts\stopBGM.gml</script>
+      <script>scripts\fadeoutBGM.gml</script>
+      <script>scripts\fadeinBGM.gml</script>
+      <script>scripts\playBGS.gml</script>
     </scripts>
     <scripts name="Initialization">
       <script>scripts\createLoopTable.gml</script>
       <script>scripts\loadPokeData.gml</script>
       <script>scripts\loadBuildingData.gml</script>
       <script>scripts\createWorld.gml</script>
+      <script>scripts\initializeRoom.gml</script>
+      <script>scripts\initSettings.gml</script>
     </scripts>
     <scripts name="Pokémon">
       <script>scripts\spawnPokemon.gml</script>
@@ -222,6 +232,7 @@
         <object>objects\obj_3DObject</object>
         <object>objects\obj_building</object>
         <object>objects\obj_billboard</object>
+        <object>objects\obj_titlescreenModel</object>
       </objects>
       <objects name="Buildings">
         <object>objects\obj_townHall</object>
@@ -241,15 +252,15 @@
       <object>objects\obj_sentryPost</object>
       <object>objects\obj_spawner</object>
     </objects>
-    <object>objects\obj_camera</object>
-    <object>objects\gameManager</object>
-    <object>objects\drawer</object>
-    <object>objects\townData</object>
     <objects name="UI">
       <object>objects\obj_ui_game</object>
       <object>objects\titleScreen</object>
       <object>objects\ui_update</object>
     </objects>
+    <object>objects\gameManager</object>
+    <object>objects\obj_camera</object>
+    <object>objects\drawer</object>
+    <object>objects\townData</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rm_init</room>
@@ -257,7 +268,7 @@
     <room>rooms\rm_titleScreen</room>
     <room>rooms\rm_game</room>
   </rooms>
-  <constants number="9">
+  <constants number="14">
     <constant name="VANISHINGPOINT">1</constant>
     <constant name="AI_RAMPAGE">0</constant>
     <constant name="AI_ASSASSIN">1</constant>
@@ -267,6 +278,11 @@
     <constant name="NEW">1</constant>
     <constant name="LOAD">2</constant>
     <constant name="SETTINGS">3</constant>
+    <constant name="gamemode_survival">0</constant>
+    <constant name="gamemode_creative">1</constant>
+    <constant name="gamestate_build">0</constant>
+    <constant name="gamestate_rts">1</constant>
+    <constant name="GAMEVERSION">0.3</constant>
   </constants>
   <help>
     <rtf>help.rtf</rtf>

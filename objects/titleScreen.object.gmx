@@ -35,10 +35,10 @@ loadoffset = 0; // because infinite save files could mean infinite problems
 filetodelete="";
 
 fadeout = false;
-fadetimer = 240;
+fadetimer = room_speed*4; // 2 seconds fadeout + 2 second pause
 
 // play title music
-playMusic(mus_titles);
+playBGM(mus_titles);
 </string>
           </argument>
         </arguments>
@@ -100,8 +100,14 @@ if !fadeout {
         }
         if keyboard_check_pressed(vk_enter) {
             gameManager.saveFile = createWorld(keyboard_string);
-            fadeoutMusic(2000);
+            fadeoutBGM(2000);
             fadeout = true;
+        }
+        sel = -1
+        if window_mouse_get_y() &gt; 436 sel = 2;
+        if window_mouse_get_y() &gt; 462 sel = -1;
+        if sel != -1 &amp;&amp; mouse_check_button_pressed(mb_left) {
+            scrn = MAIN;
         }
     } else if scrn == LOAD {
         if ds_list_size(saveFiles) &lt;= 0 scrn = MAIN;
@@ -110,7 +116,10 @@ if !fadeout {
             if window_mouse_get_y() &gt; 384 sel = 0;
             if window_mouse_get_y() &gt; 410 sel = 1;
             if window_mouse_get_y() &gt; 436 sel = 2;
+            // in case the player only has 1 or two saves
+            if sel &gt; ds_list_size(saveFiles)-1 sel = -1;
             if window_mouse_get_y() &gt; 462 sel = 3;
+            
             
             if sel &gt;= 0 &amp;&amp; keyboard_check(vk_alt) &amp;&amp; keyboard_check_pressed(ord("D")) {
                 filetodelete= saveFiles[| sel+loadoffset];
@@ -120,7 +129,7 @@ if !fadeout {
                 if sel == 3 {
                     scrn = MAIN;
                 } else {
-                    fadeoutMusic(2000);
+                    fadeoutBGM(2000);
                     gameManager.saveFile = loadSave(saveFiles[| sel+loadoffset]);
                     fadeout = true;
                 }
@@ -137,7 +146,7 @@ if !fadeout {
 } else {
     fadetimer -= 1;
     if fadetimer &lt;= 0 {
-        stopMusic();
+        stopBGM();
         room_goto(rm_game)
     }
 }
@@ -188,18 +197,24 @@ if !fadeout {
             <kind>1</kind>
             <string>// main menu
 draw_set_font(fnt_ui);
+
+draw_sprite(ui_logo,0,window_get_width()/2, 64);
+
 if scrn == MAIN {
-    draw_text_transformed(480-string_width("New Game"),384,"New Game",2,2,0);
+    draw_text_transformed_shadow(480-string_width("New Game"),384,"New Game",2,2,0);
     if ds_list_size(saveFiles) == 0 draw_set_colour(c_gray);
-    draw_text_transformed(480-string_width("Load Game"),410,"Load Game",2,2,0);
+    draw_text_transformed_shadow(480-string_width("Load Game"),410,"Load Game",2,2,0);
     if ds_list_size(saveFiles) == 0 draw_set_colour(c_white);
-    draw_text_transformed(480-string_width("Settings"),436,"Settings",2,2,0);
-    draw_text_transformed(480-string_width("Exit"),462,"Exit",2,2,0);
+    draw_text_transformed_shadow(480-string_width("Settings"),436,"Settings",2,2,0);
+    draw_text_transformed_shadow(480-string_width("Exit"),462,"Exit",2,2,0);
     if sel &gt;= 0
         draw_sprite(ui_sel,0,480+string_width("Load Game")+4+dsin(selcount)*4,390+26*sel);
 } else if scrn == NEW {
-    draw_text_transformed(480-string_width("Enter save file name and press enter."),384,"Enter save file name and press enter.",2,2,0);
-    draw_text_transformed(480-string_width(keyboard_string),410,keyboard_string,2,2,0);
+    draw_text_transformed_shadow(480-string_width("Enter save file name and press enter."),384,"Enter save file name and press enter.",2,2,0);
+    draw_text_transformed_shadow(480-string_width(keyboard_string),410,keyboard_string,2,2,0);
+    draw_text_transformed_shadow(480-string_width("Back"),436,"Back",2,2,0);
+    if sel != -1
+        draw_sprite(ui_sel,0,480+string_width("Back")+4+dsin(selcount)*4,442);
 } else if scrn == LOAD {
     for (var i = 0; i &lt; 3; i++) {
         if i &gt; ds_list_size(saveFiles)-1 break;
@@ -208,17 +223,17 @@ if scrn == MAIN {
         } else {
             var txt = "";
         }
-        draw_text_transformed(480-string_width(txt),384+26*i,txt,2,2,0);
+        draw_text_transformed_shadow(480-string_width(txt),384+26*i,txt,2,2,0);
         if sel == i
             draw_sprite(ui_sel,0,480+string_width(txt)+4+dsin(selcount)*4,390+26*sel);
     }
-    draw_text_transformed(480-string_width("Back"),462,"Back",2,2,1);
+    draw_text_transformed_shadow(480-string_width("Back"),462,"Back",2,2,1);
     if sel == 3 draw_sprite(ui_sel,0,480+string_width("Back")+4+dsin(selcount)*4,390+26*sel);
 }
 
 if fadeout {
-    if fadetimer-120 &gt; 0
-        draw_set_alpha(1-(fadetimer-120)/120);
+    if fadetimer-room_speed*2 &gt; 0
+        draw_set_alpha(1-(fadetimer-room_speed*2)/(room_speed*2));
     draw_set_color(c_black);
     draw_rectangle(0,0,window_get_width(),window_get_height(),false);
     draw_set_alpha(1);

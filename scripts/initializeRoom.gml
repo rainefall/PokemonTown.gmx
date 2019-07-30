@@ -6,6 +6,8 @@ townData.level=gameManager.saveFile[? "level"];
 townData.experience=gameManager.saveFile[? "experience"];
 townData.money=gameManager.saveFile[? "money"];
 
+gameManager.state = gameManager.saveFile[? "state"];
+
 var objects = gameManager.saveFile[? "objects"];
 for (var i = 0; i < ds_list_size(gameManager.saveFile[? "objects"]); i++) {
     var current_o = objects[| i];
@@ -13,6 +15,7 @@ for (var i = 0; i < ds_list_size(gameManager.saveFile[? "objects"]); i++) {
     inst.data = gameManager.buildingdata[? current_o[? "type"]];
     inst.maxhp = inst.data[? "hp"];
     inst.hp = current_o[? "hp"];
+    inst.direction = current_o[? "angle"];
     inst.sprite_index = asset_get_index("spr_"+current_o[? "type"]);
     if script_exists(asset_get_index("init_"+current_o[? "type"])) {
         with inst
@@ -29,5 +32,6 @@ for (var i = 0; i < ds_list_size(gameManager.saveFile[? "objects"]); i++) {
 var spawners = gameManager.saveFile[? "spawners"];
 for (var i = 0; i < ds_list_size(gameManager.saveFile[? "spawners"]); i++) {
     var current_s = spawners[| i];
-    instance_create(current_s[? "x"], current_s[? "y"], obj_spawner);
+    var sp = instance_create(current_s[? "x"], current_s[? "y"], obj_spawner);
+    sp.pokemon = current_s[? "pokemon"];
 }

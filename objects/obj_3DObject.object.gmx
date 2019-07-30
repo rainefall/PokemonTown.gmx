@@ -40,7 +40,7 @@ u_nmap = shader_get_sampler_index(shd_lighting3D, "normalMap");
         </arguments>
       </action>
     </event>
-    <event eventtype="3" enumb="1">
+    <event eventtype="3" enumb="2">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -84,7 +84,7 @@ image_angle = direction;
             <kind>1</kind>
             <string>if screen_x - sprite_width * 1/obj_camera.z * image_xscale &lt; view_wview[0]/2 and screen_x + sprite_width * 1/obj_camera.z * image_xscale &gt; -view_wview[0]/2 and screen_y - sprite_height * image_number * 1/obj_camera.z &lt; view_hview[0]/2 and screen_y + sprite_height * 1/obj_camera.z &gt; -view_hview[0]/2 {
     // shadow
-    if surface_exists(global.shadowSurface) {
+    if surface_exists(global.shadowSurface) &amp;&amp; gameManager.settings[? "shadows"] {
         surface_set_target(global.shadowSurface);
         for (var i=0; i &lt; image_number; i++;) {     
             draw_sprite_ext(sprite_index, i, view_wview[0]/2 + screen_x + lengthdir_x(i,drawer.lighting_angle+obj_camera.angle) * 1/obj_camera.z, view_hview[0]/2 + screen_y + lengthdir_y(i,drawer.lighting_angle+obj_camera.angle) * 1/obj_camera.z, image_xscale * 1.25 *  VANISHINGPOINT/2 * 1/obj_camera.z,image_yscale * 1.25 * VANISHINGPOINT/2 * 1/obj_camera.z,screen_dir,c_black,1)

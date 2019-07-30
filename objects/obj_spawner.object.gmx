@@ -25,7 +25,8 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>alarm[0] = 1;
+            <string>alarm[0] = 3000;
+pokemon = -1;
 </string>
           </argument>
         </arguments>
@@ -48,8 +49,16 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>spawnPokemon("graveler", x, y);
-alarm[0] = 600;
+            <string>if gameManager.state == gamestate_rts {
+    var pk = pokemon[| irandom(ds_list_size(pokemon)-1)]
+    var dat = gameManager.pokedata[? pl]
+    while dat[? "startlvl"] &gt; townData.level {
+        pk = pokemon[| irandom(ds_list_size(pokemon)-1)]
+        dat = gameManager.pokedata[? pl]
+    }
+    spawnPokemon(pk, x, y);
+    alarm[0] = irandom_range(600,1200);
+}
 </string>
           </argument>
         </arguments>

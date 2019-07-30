@@ -31,6 +31,10 @@ buildingdata = loadBuildingData();
 loopTable = createLoopTable();
 currentSong = -1;
 buildingMenuActive = false;
+timer_offset=0;
+state = -1;
+gp_cursorx = window_get_width()/2;
+gp_cursory = window_get_height()/2;
 
 selection = noone;
 
@@ -41,7 +45,18 @@ buildMode = false;
 
 // ui elements
 
-tick = 0;
+time = 0;
+
+// game settings file
+if !file_exists(working_directory + "settings.dat") { 
+    initSettings(); 
+} else { 
+    settings = ds_map_secure_load(working_directory + "settings.dat");
+}
+
+// check for updates
+// edit GAMEVERSION on new releases
+if os_is_network_connected() get = http_get("https://pastebin.com/raw/tWQGPhkK")
 </string>
           </argument>
         </arguments>
@@ -64,9 +79,7 @@ tick = 0;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if room == rm_init room_goto(rm_titleScreen);
-
-//if saveFile == 0 {
+            <string>//if saveFile == 0 {
     //saveFile = loadSave("toby.pktsav");
     
     //room_goto(rm_game);
@@ -83,32 +96,83 @@ if currentSong != -1 {
 }
 
 if room == rm_game {
-    if keyboard_check_pressed(vk_space) {
-        //saveGame();
-        playMusic(mus_night);
-        audio_sound_set_track_position(currentSong,290);
-    }
-    
+    // move gamepad cursor
+    gp_cursorx+=gamepad_axis_value(0,gp_axisrh)*4;
+    gp_cursory+=gamepad_axis_value(0,gp_axisrv)*4;
+   
+    // selection (mouse) 
     if mouse_check_button_pressed(mb_left) &amp;&amp; !buildMode &amp;&amp; !obj_ui_game.paused {
         selection = get_instance_mouse_over(obj_building);
         if selection == noone selection = get_instance_mouse_over(obj_trainer);
     }
     
-    if keyboard_check_pressed(ord("B")) &amp;&amp; !obj_ui_game.paused &amp;&amp; !buildingMenuActive {
-        if !buildMode {
-            buildMode = true;
-            constructionTimeAgain = true;
-        } else {
-            buildMode = false;
-            constructionTimeAgain = false;
-            obj_ui_game.buildingbuilding = 0;
-            obj_camera.move_speed = 2;
+    // selection (gamepad)
+    if gamepad_button_check_pressed(0,gp_shoulderrb) &amp;&amp; !buildMode &amp;&amp; !obj_ui_game.paused {
+        selection = get_instance_gpcursor_over(obj_building);
+        if selection == noone selection = get_instance_gpcursor_over(obj_trainer);
+    }
+    
+    // enter build mode
+    if state == gamestate_build {
+        if (keyboard_check_pressed(ord("B")) || gamepad_button_check_pressed(0,gp_face4)) &amp;&amp; !obj_ui_game.paused &amp;&amp; !buildingMenuActive {
+            if !buildMode {
+                buildMode = true;
+                constructionTimeAgain = true;
+            } else {
+                buildMode = false;
+                constructionTimeAgain = false;
+                obj_ui_game.buildingbuilding = 0;
+                obj_camera.move_speed = 2;
+            }
         }
     }
     
-    tick += 1;
+    // music management
+    if saveFile[? "gamemode"] == gamemode_survival {
+        time = (gameManager.saveFile[? "playtime"] + get_timer() - gameManager.timer_offset)/60000000
+        if time % 20 &lt; 10 &amp;&amp; !audio_is_playing(currentSong) &amp;&amp; irandom(500) == 789 {
+            playBGM(asset_get_index("mus_village_"+string(irandom(2)+1)),false);
+        } else if time % 20 &lt; 11.5 {
+            playBGM(mus_night);
+        }
+    }
 }
 
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="62">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if ds_map_find_value(async_load, "id") == get {
+    if ds_map_find_value(async_load, "status") == 0 {
+        ini_open_from_string(ds_map_find_value(async_load, "result"));
+        if ini_read_real("update","latestversion",-1) &gt; GAMEVERSION {
+            var file = file_text_open_write(working_directory + "\update.tmp");
+            file_text_write_string(file,ini_read_string("update","download",""));
+            file_text_close(file);
+            room_goto(rm_update);
+        } else {
+            room_goto(rm_titleScreen);
+        }
+    }
+}
 </string>
           </argument>
         </arguments>

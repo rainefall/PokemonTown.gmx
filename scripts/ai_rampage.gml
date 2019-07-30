@@ -20,14 +20,14 @@ if target != obj_trainer {
         var inst; 
         inst = collision_rectangle(x-sprite_width/2, y-sprite_height/2, x+sprite_width/2, y+sprite_height/2, target, false, true); 
         if inst != noone {
-            with (inst) hp -= 2; 
+            inst.hp -= data[? "damage"] / inst.data[? "def"] * 30;
         } 
     }
 } else {
     // mon is in battle
     if hp > 0 {
         if irandom(10) != 6 {
-            target.hp -= 2;
+            target.hp -= data[? "damage"] / 100 * 30;;
         }
         if target.hp <= 0
             target=noone; 
