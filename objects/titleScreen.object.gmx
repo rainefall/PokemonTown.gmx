@@ -38,6 +38,8 @@ shadowsenabled="";
 fadeout = false;
 fadetimer = room_speed*4; // 2 seconds fadeout + 2 second pause
 
+endtimes = false;
+
 // play title music
 playBGM(mus_titles);
 </string>
@@ -142,6 +144,8 @@ if !fadeout {
         if mouse_wheel_down() &amp;&amp; loadoffset &lt; ds_list_size(saveFiles)-3
             loadoffset++;
     } else if scrn == SETTINGS {
+        var bgmw = string_width("Music Volume: ")*2+100;
+        var sfxw = string_width("SFX Volume: ")*2+100;
         shadowsenabled = "Shadows: ";
         if gameManager.settings[? "shadows"] == false shadowsenabled+="Disabled";
         if gameManager.settings[? "shadows"] == true shadowsenabled+="Enabled";
@@ -153,6 +157,23 @@ if !fadeout {
                     gameManager.settings[? "shadows"] = false;
                 }
             }
+        }
+        
+        if window_mouse_get_y() &gt;= 428 &amp;&amp; window_mouse_get_y() &lt;= 436 &amp;&amp; mouse_check_button(mb_left) {
+            gameManager.settings[? "bgmvol"] = clamp(window_mouse_get_x()-(480-bgmw/2+string_width("Music Volume: ")*2),0,100);
+    audio_sound_gain(gameManager.currentSong, gameManager.settings[? "bgmvol"]/100, 0);
+        }
+        if window_mouse_get_y() &gt;= 452 &amp;&amp; window_mouse_get_y() &lt;= 460 &amp;&amp; mouse_check_button(mb_left) {
+            gameManager.settings[? "sfxvol"] = clamp(window_mouse_get_x()-(480-sfxw/2+string_width("SFX Volume: ")*2),0,100);
+        }
+        if window_mouse_get_y() &gt; 462 &amp;&amp; window_mouse_get_y() &lt; 486 &amp;&amp; window_mouse_get_x() &gt; 480-string_width("Back")*2 &amp;&amp; window_mouse_get_x() &lt; 480+string_width("Back") {
+            endtimes = true;
+            if mouse_check_button_pressed(mb_left) {
+                ds_map_secure_save(gameManager.settings, working_directory+"settings.dat");
+                scrn = MAIN;
+            }   
+        } else {
+            endtimes = false;
         }
     }
 } else {
@@ -242,7 +263,15 @@ if scrn == MAIN {
     draw_text_transformed_shadow(480-string_width("Back"),462,"Back",2,2,1);
     if sel == 3 draw_sprite(ui_sel,0,480+string_width("Back")+4+dsin(selcount)*4,390+26*sel);
 } else if scrn == SETTINGS {
+    var bgmw = string_width("Music Volume: ")*2+100;
+    var sfxw = string_width("SFX Volume: ")*2+100;
     draw_text_transformed_shadow(480-string_width(shadowsenabled),384,shadowsenabled,2,2,0);
+    draw_text_transformed_shadow(480-bgmw/2,410,"Music Volume: ",2,2,0);
+    draw_healthbar(480-bgmw/2+string_width("Music Volume: ")*2,428,480+bgmw/2,436,gameManager.settings[? "bgmvol"],c_gray,c_white,c_white,0,true,false);
+    draw_text_transformed_shadow(480-sfxw/2,436,"SFX Volume: ",2,2,0);
+    draw_healthbar(480-sfxw/2+string_width("SFX Volume: ")*2,452,480+sfxw/2,460,gameManager.settings[? "sfxvol"],c_gray,c_white,c_white,0,true,false);
+    draw_text_transformed_shadow(480-string_width("Back"),462,"Back",2,2,1);
+    if endtimes draw_sprite(ui_sel,0,480+string_width("Back")+4+dsin(selcount)*4,468);
 }
 
 if fadeout {
