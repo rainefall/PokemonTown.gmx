@@ -38,6 +38,8 @@ shadowsenabled="";
 fadeout = false;
 fadetimer = room_speed*4; // 2 seconds fadeout + 2 second pause
 
+endtimes = false;
+
 // play title music
 playBGM(mus_titles);
 </string>
@@ -74,12 +76,12 @@ if filetodelete != "" {
 if !fadeout {
     if scrn == MAIN {
         sel = -1
-        if window_mouse_get_x() &gt; 480-string_width("Load Game")*2 &amp;&amp; window_mouse_get_x() &lt; 480+string_width("Load Game") {
-            if window_mouse_get_y() &gt; 384 sel = 0;
-            if window_mouse_get_y() &gt; 410 sel = 1;
-            if window_mouse_get_y() &gt; 436 sel = 2;
-            if window_mouse_get_y() &gt; 462 sel = 3;
-            if window_mouse_get_y() &gt; 486 sel = -1;
+        if window_mouse_get_x() &gt; window_get_width()/2-string_width("Load Game")*2 &amp;&amp; window_mouse_get_x() &lt; window_get_width()/2+string_width("Load Game") {
+            if window_mouse_get_y() &gt; window_get_height()-156 sel = 0;
+            if window_mouse_get_y() &gt; window_get_height()-130 sel = 1;
+            if window_mouse_get_y() &gt; window_get_height()-104 sel = 2;
+            if window_mouse_get_y() &gt; window_get_height()-78 sel = 3;
+            if window_mouse_get_y() &gt; window_get_height()-52 sel = -1;
             
             if sel &gt;= 0 &amp;&amp; mouse_check_button_pressed(mb_left) {
                 if sel == 3 {
@@ -96,7 +98,7 @@ if !fadeout {
             }
         }
     } else if scrn == NEW {
-        if string_length(keyboard_string) &gt; 15{
+        if string_length(keyboard_string) &gt; 24 {
             keyboard_string = string_copy(keyboard_string, 1, 15);
         }
         if keyboard_check_pressed(vk_enter) {
@@ -105,21 +107,22 @@ if !fadeout {
             fadeout = true;
         }
         sel = -1
-        if window_mouse_get_y() &gt; 436 sel = 2;
-        if window_mouse_get_y() &gt; 462 sel = -1;
+        if window_mouse_get_y() &gt; window_get_height()-104 sel = 2;
+        if window_mouse_get_y() &gt; window_get_height()-78 sel = -1;
         if sel != -1 &amp;&amp; mouse_check_button_pressed(mb_left) {
             scrn = MAIN;
         }
     } else if scrn == LOAD {
         if ds_list_size(saveFiles) &lt;= 0 scrn = MAIN;
         sel = -1
-        if window_mouse_get_x() &gt; 480-string_width("Load Game")*2 &amp;&amp; window_mouse_get_x() &lt; 480+string_width("Load Game") {
-            if window_mouse_get_y() &gt; 384 sel = 0;
-            if window_mouse_get_y() &gt; 410 sel = 1;
-            if window_mouse_get_y() &gt; 436 sel = 2;
+        if window_mouse_get_x() &gt; window_get_width()/2-string_width("Load Game")*2 &amp;&amp; window_mouse_get_x() &lt; window_get_width()/2+string_width("Load Game") {
+            if window_mouse_get_y() &gt; window_get_height()-156 sel = 0;
+            if window_mouse_get_y() &gt; window_get_height()-130 sel = 1;
+            if window_mouse_get_y() &gt; window_get_height()-104 sel = 2;
             // in case the player only has 1 or two saves
             if sel &gt; ds_list_size(saveFiles)-1 sel = -1;
-            if window_mouse_get_y() &gt; 462 sel = 3;
+            if window_mouse_get_y() &gt; window_get_height()-78 sel = 3;
+            if window_mouse_get_y() &gt; window_get_height()-52 sel = -1;
             
             
             if sel &gt;= 0 &amp;&amp; keyboard_check(vk_alt) &amp;&amp; keyboard_check_pressed(ord("D")) {
@@ -142,17 +145,36 @@ if !fadeout {
         if mouse_wheel_down() &amp;&amp; loadoffset &lt; ds_list_size(saveFiles)-3
             loadoffset++;
     } else if scrn == SETTINGS {
+        var bgmw = string_width("Music Volume: ")*2+100;
+        var sfxw = string_width("SFX Volume: ")*2+100;
         shadowsenabled = "Shadows: ";
         if gameManager.settings[? "shadows"] == false shadowsenabled+="Disabled";
         if gameManager.settings[? "shadows"] == true shadowsenabled+="Enabled";
-        if window_mouse_get_x() &gt; 480-string_width(shadowsenabled)*2 &amp;&amp; window_mouse_get_x() &lt; 480+string_width(shadowsenabled) {
-            if window_mouse_get_y() &gt; 384 &amp;&amp; window_mouse_get_y() &lt; 410 &amp;&amp; mouse_check_button_pressed(mb_left) {
+        if window_mouse_get_x() &gt; window_get_width()/2-string_width(shadowsenabled)*2 &amp;&amp; window_mouse_get_x() &lt; window_get_width()/2+string_width(shadowsenabled) {
+            if window_mouse_get_y() &gt; window_get_height()-156 &amp;&amp; window_mouse_get_y() &lt; window_get_height()-130 &amp;&amp; mouse_check_button_pressed(mb_left) {
                 if gameManager.settings[? "shadows"] == false { 
                     gameManager.settings[? "shadows"] = true;
                 } else {
                     gameManager.settings[? "shadows"] = false;
                 }
             }
+        }
+        
+        if window_mouse_get_y() &gt;= window_get_height()-112 &amp;&amp; window_mouse_get_y() &lt;= window_get_height()-104 &amp;&amp; mouse_check_button(mb_left) {
+            gameManager.settings[? "bgmvol"] = clamp(window_mouse_get_x()-(window_get_width()/2-bgmw/2+string_width("Music Volume: ")*2),0,100);
+            audio_sound_gain(gameManager.currentSong, gameManager.settings[? "bgmvol"]/100, 0);
+        }
+        if window_mouse_get_y() &gt;= window_get_height()-88 &amp;&amp; window_mouse_get_y() &lt;= window_get_height()-80 &amp;&amp; mouse_check_button(mb_left) {
+            gameManager.settings[? "sfxvol"] = clamp(window_mouse_get_x()-(window_get_width()/2-sfxw/2+string_width("SFX Volume: ")*2),0,100);
+        }
+        if window_mouse_get_y() &gt; window_get_height()-78 &amp;&amp; window_mouse_get_y() &lt; window_get_height()-54 &amp;&amp; window_mouse_get_x() &gt; window_get_width()/2-string_width("Back")*2 &amp;&amp; window_mouse_get_x() &lt; window_get_width()/2+string_width("Back") {
+            endtimes = true;
+            if mouse_check_button_pressed(mb_left) {
+                ds_map_secure_save(gameManager.settings, working_directory+"settings.dat");
+                scrn = MAIN;
+            }   
+        } else {
+            endtimes = false;
         }
     }
 } else {
@@ -212,22 +234,31 @@ draw_set_font(fnt_ui);
 
 draw_sprite(ui_logo,0,window_get_width()/2, 64);
 
+// main menu
 if scrn == MAIN {
-    draw_text_transformed_shadow(480-string_width("New Game"),384,"New Game",2,2,0);
+    // text
+    draw_text_transformed_shadow(window_get_width()/2-string_width("New Game"),window_get_height()-156,"New Game",2,2,0);
+    // if save files list is empty
     if ds_list_size(saveFiles) == 0 draw_set_colour(c_gray);
-    draw_text_transformed_shadow(480-string_width("Load Game"),410,"Load Game",2,2,0);
-    if ds_list_size(saveFiles) == 0 draw_set_colour(c_white);
-    draw_text_transformed_shadow(480-string_width("Settings"),436,"Settings",2,2,0);
-    draw_text_transformed_shadow(480-string_width("Exit"),462,"Exit",2,2,0);
+    draw_text_transformed_shadow(window_get_width()/2-string_width("Load Game"),window_get_height()-130,"Load Game",2,2,0);
+    if ds_list_size(saveFiles) == 0 draw_set_colour(c_white); // reset colour if it was set to grey before
+    draw_text_transformed_shadow(window_get_width()/2-string_width("Settings"),window_get_height()-104,"Settings",2,2,0);
+    draw_text_transformed_shadow(window_get_width()/2-string_width("Exit"),window_get_height()-78,"Exit",2,2,0);
+    // selection icon
     if sel &gt;= 0
-        draw_sprite(ui_sel,0,480+string_width("Load Game")+4+dsin(selcount)*4,390+26*sel);
-} else if scrn == NEW {
-    draw_text_transformed_shadow(480-string_width("Enter save file name and press enter."),384,"Enter save file name and press enter.",2,2,0);
-    draw_text_transformed_shadow(480-string_width(keyboard_string),410,keyboard_string,2,2,0);
-    draw_text_transformed_shadow(480-string_width("Back"),436,"Back",2,2,0);
+        draw_sprite(ui_sel,0,window_get_width()/2+string_width("Load Game")+4+dsin(selcount)*4,window_get_height()-150+26*sel);
+}
+// new game screen 
+else if scrn == NEW {
+    draw_text_transformed_shadow(window_get_width()/2-string_width("Enter save file name and press enter."),window_get_height()-156,"Enter save file name and press enter.",2,2,0);
+    draw_text_transformed_shadow(window_get_width()/2-string_width(keyboard_string),window_get_height()-130,keyboard_string,2,2,0);
+    draw_text_transformed_shadow(window_get_width()/2-string_width("Back"),window_get_height()-104,"Back",2,2,0);
     if sel != -1
-        draw_sprite(ui_sel,0,480+string_width("Back")+4+dsin(selcount)*4,442);
-} else if scrn == LOAD {
+        draw_sprite(ui_sel,0,window_get_width()/2+string_width("Back")+4+dsin(selcount)*4,window_get_height()-98);
+} 
+// load screen
+else if scrn == LOAD {
+    // draw save file names
     for (var i = 0; i &lt; 3; i++) {
         if i &gt; ds_list_size(saveFiles)-1 break;
         if file_exists(saveFiles[| i+loadoffset]) {
@@ -235,16 +266,35 @@ if scrn == MAIN {
         } else {
             var txt = "";
         }
-        draw_text_transformed_shadow(480-string_width(txt),384+26*i,txt,2,2,0);
+        draw_text_transformed_shadow(window_get_width()/2-string_width(txt),window_get_height()-156+26*i,txt,2,2,0);
         if sel == i
-            draw_sprite(ui_sel,0,480+string_width(txt)+4+dsin(selcount)*4,390+26*sel);
+            draw_sprite(ui_sel,0,window_get_width()/2+string_width(txt)+4+dsin(selcount)*4,window_get_height()-150+26*sel);
     }
-    draw_text_transformed_shadow(480-string_width("Back"),462,"Back",2,2,1);
-    if sel == 3 draw_sprite(ui_sel,0,480+string_width("Back")+4+dsin(selcount)*4,390+26*sel);
-} else if scrn == SETTINGS {
-    draw_text_transformed_shadow(480-string_width(shadowsenabled),384,shadowsenabled,2,2,0);
+    // draw back button
+    draw_text_transformed_shadow(window_get_width()/2-string_width("Back"),window_get_height()-78,"Back",2,2,1);
+    if sel == 3 draw_sprite(ui_sel,0,window_get_width()/2+string_width("Back")+4+dsin(selcount)*4,window_get_height()-150+26*sel);
+} 
+// settings menu
+else if scrn == SETTINGS {
+    // woidth of bgm/sfx entries
+    var bgmw = string_width("Music Volume: ")*2+100;
+    var sfxw = string_width("SFX Volume: ")*2+100;
+    // shadow enabled/disabled option
+    draw_text_transformed_shadow(window_get_width()/2-string_width(shadowsenabled),window_get_height()-156,shadowsenabled,2,2,0);
+    // music volume text
+    draw_text_transformed_shadow(window_get_width()/2-bgmw/2,window_get_height()-130,"Music Volume: ",2,2,0);
+    // music volume slider
+    draw_healthbar(window_get_width()/2-bgmw/2+string_width("Music Volume: ")*2,window_get_height()-112,window_get_width()/2+bgmw/2,window_get_height()-104,gameManager.settings[? "bgmvol"],c_gray,c_white,c_white,0,true,false);
+    // sfx volume text
+    draw_text_transformed_shadow(window_get_width()/2-sfxw/2,window_get_height()-104,"SFX Volume: ",2,2,0);
+    // sfx volume slider
+    draw_healthbar(window_get_width()/2-sfxw/2+string_width("SFX Volume: ")*2,window_get_height()-88,window_get_width()/2+sfxw/2,window_get_height()-80,gameManager.settings[? "sfxvol"],c_gray,c_white,c_white,0,true,false);
+    // back text
+    draw_text_transformed_shadow(window_get_width()/2-string_width("Back"),window_get_height()-78,"Back",2,2,1);
+    // go back selection
+    if endtimes draw_sprite(ui_sel,0,window_get_width()/2+string_width("Back")+4+dsin(selcount)*4,window_get_height()-72);
 }
-
+// fadeout transition
 if fadeout {
     if fadetimer-room_speed*2 &gt; 0
         draw_set_alpha(1-(fadetimer-room_speed*2)/(room_speed*2));

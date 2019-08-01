@@ -120,6 +120,14 @@ if state == gamestate_rts {
 }
 
 if room == rm_game {
+    if keyboard_check_pressed(vk_f2) {
+        var surf = surface_create(window_get_width()/3,window_get_height()/3);
+        surface_copy(surf,0,0,global.shadowSurface);
+        surface_copy(surf,0,0,global.objectSurface);
+        surface_save(surf,working_directory+"screenshot-"+get_time());
+        surface_free(surf);
+    }
+
     // move gamepad cursor
     gp_cursorx+=gamepad_axis_value(0,gp_axisrh)*4;
     gp_cursory+=gamepad_axis_value(0,gp_axisrv)*4;
@@ -245,7 +253,8 @@ ds_map_destroy(pokedata);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string></string>
+            <string>window_set_caption("Pokémon Town - "+string(fps_real)+"FPS");
+</string>
           </argument>
         </arguments>
       </action>
