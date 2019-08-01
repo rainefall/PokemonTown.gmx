@@ -30,7 +30,6 @@ window_h = window_get_height();
 
 lighting_angle = 315;
 global.objectSurface = surface_create(window_get_width()/3,window_get_height()/3);
-global.tObjectSurface = surface_create(window_get_width()/3,window_get_height()/3);
 global.shadowSurface = surface_create(window_get_width()/3,window_get_height()/3);
 
 //Get 'uniform's for 'shd_outline'
@@ -59,38 +58,34 @@ u_width = shader_get_uniform(shd_outline, "pixelW");
           <argument>
             <kind>1</kind>
             <string>if window_h != window_get_height() || window_w != window_get_height() {
-    window_w = window_get_width();
-    window_h = window_get_height();
-    surface_resize(application_surface,window_get_width(),window_get_height());
-    if surface_exists(global.shadowSurface) surface_resize(global.objectSurface,window_get_width()/3,window_get_height()/3);
-    //surface_resize(global.tObjectSurface,window_get_width()/3,window_get_height()/3);
-    if surface_exists(global.objectSurface)surface_resize(global.shadowSurface,window_get_width()/3,window_get_height()/3);
+    window_w = max(window_get_width(),3);
+    window_h = max(window_get_height(),3);
+    // free surfaces
+    surface_free(global.objectSurface);
+    surface_free(global.shadowSurface);
+    surface_resize(application_surface,window_w,window_h);
+    global.objectSurface = surface_create(window_w/3,window_h/3);
+    global.shadowSurface = surface_create(window_w/3,window_h/3);
+    if view_enabled {
+        view_wview[0] = window_w/3;
+        view_hview[0] = window_h/3;
+        view_wport[0] = window_w;
+        view_hport[0] = window_h;
+    }
+    
+    if room == rm_game {
+        if gameManager.buildMode {
+            obj_ui_game.buildwindowy = window_h;
+        } else {
+            obj_ui_game.buildwindowy = window_h+88;
+        }
+        
+        if surface_exists(obj_ui_game.minimap) {
+            surface_free(obj_ui_game.minimap);
+            obj_ui_game.minimap = surface_create(192,192);
+        }
+    }
 }
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="7" enumb="3">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>surface_free(global.objectSurface);
-surface_free(global.shadowSurface);
-surface_free(global.tObjectSurface);
 </string>
           </argument>
         </arguments>
@@ -115,11 +110,6 @@ surface_free(global.tObjectSurface);
             <kind>1</kind>
             <string>if surface_exists(global.shadowSurface){
     surface_set_target(global.shadowSurface);
-    draw_clear_alpha(c_white,0);
-    surface_reset_target();
-}
-if surface_exists(global.tObjectSurface){
-    surface_set_target(global.tObjectSurface);
     draw_clear_alpha(c_white,0);
     surface_reset_target();
 }
@@ -150,18 +140,17 @@ if surface_exists(global.objectSurface){
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if surface_exists(global.shadowSurface)
-    draw_surface_ext(global.shadowSurface,0,0,1,1,0,c_white,0.5); // draw shadows slightly transparent
-if surface_exists(global.shadowSurface)
-    draw_surface_ext(global.tObjectSurface,0,0,1,1,0,c_white,0.5); // draw transparent objects
-if surface_exists(global.objectSurface) {
-    shader_set(shd_outline); 
-    shader_set_uniform_f(u_ht, 1/surface_get_height(global.objectSurface)); 
-    shader_set_uniform_f(u_width, 1/surface_get_width(global.objectSurface));
-    draw_surface_ext(global.objectSurface,0,0,1,1,0,c_white,1); // draw objects
-    shader_reset();
+            <string>if room == rm_game {
+    if surface_exists(global.shadowSurface)
+        draw_surface_ext(global.shadowSurface,0,0,1,1,0,c_white,0.5); // draw shadows slightly transparent
+    if surface_exists(global.objectSurface) {
+        shader_set(shd_outline); 
+        shader_set_uniform_f(u_ht, 1/surface_get_height(global.objectSurface)); 
+        shader_set_uniform_f(u_width, 1/surface_get_width(global.objectSurface));
+        draw_surface_ext(global.objectSurface,0,0,1,1,0,c_white,1); // draw objects
+        shader_reset();
+    }
 }
-
 </string>
           </argument>
         </arguments>

@@ -7,7 +7,8 @@ townData.experience=gameManager.saveFile[? "experience"];
 townData.money=gameManager.saveFile[? "money"];
 
 gameManager.state = gameManager.saveFile[? "state"];
-gameManager.alarm[0] = irandom_range(room_speed*300,room_speed*600);
+//gameManager.alarm[0] = irandom_range(room_speed*300,room_speed*600);
+gameManager.alarm[0] = irandom_range(room_speed*10,room_speed*60);
 
 var objects = gameManager.saveFile[? "objects"];
 for (var i = 0; i < ds_list_size(gameManager.saveFile[? "objects"]); i++) {

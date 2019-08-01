@@ -17,7 +17,7 @@ mp = json_decode('
 ');
 
 // you can't delete the town hall, you bloody idiot
-if object_index == obj_townHall
+if data[? "id"] == "townHall"
     ds_list_delete(mp[? "options"], ds_list_find_index(mp[? "options"],"delete"));
 
 return mp;

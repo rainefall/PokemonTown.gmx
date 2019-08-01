@@ -152,14 +152,16 @@ if !paused {
         }
           
         // mouse select building
-        if window_mouse_get_y() &gt; window_get_height()-64 &amp;&amp; window_mouse_get_x() &gt; 200 &amp;&amp; window_mouse_get_x() &lt; 760 {
-            var build_index = clamp(floor((window_mouse_get_x()-200)/48)+1, 1, ds_list_size(gameManager.buildingdata[? "ids"])-1);
+        if window_mouse_get_y() &gt; window_get_height()-64 &amp;&amp; window_mouse_get_x() &gt; window_get_width()/2-280 &amp;&amp; window_mouse_get_x() &lt; window_get_width()/2+280 {
+            var build_index = clamp(floor((window_mouse_get_x()-(window_get_width()/2-280))/48)+1, 1, ds_list_size(gameManager.buildingdata[? "ids"])-1);
             sel = gameManager.buildingdata[? ids[| build_index]];
                 lower_left_text = sel[? "name"]+"#Cost: "+string(sel[? "cost"]);
             if mouse_check_button_pressed(mb_left) {
                 buildingbuilding = ids[| build_index];
             }
         } else {
+            if mouse_check_button_pressed(mb_right)
+                buildingbuilding = 0;
             if buildingbuilding = 0
                 lower_left_text = "Build Mode";
             // build time
@@ -279,7 +281,7 @@ if !paused {
         }
     } else {
         pauseindex = -1
-        if window_mouse_get_x() &gt; 480-string_width("Load Game")*2 &amp;&amp; window_mouse_get_x() &lt; 480+string_width("Load Game") {
+        if window_mouse_get_x() &gt; window_get_width()/2-string_width("Load Game")*2 &amp;&amp; window_mouse_get_x() &lt; window_get_width()/2+string_width("Load Game") {
             // get index from mouse position
             for (var i = 0; i &lt;= ds_list_size(options); i++)
                 if window_mouse_get_y() &gt; window_get_height()/2-26*ds_list_size(options)+i*26 pauseindex = i;
@@ -317,6 +319,37 @@ if !paused {
         </arguments>
       </action>
     </event>
+    <event eventtype="8" enumb="76">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if surface_exists(minimap) {
+    // clear surface
+    surface_set_target(minimap)
+    draw_set_color($5CDE52);
+    draw_set_alpha(1);
+    draw_rectangle(0,0,192,192,false);
+    draw_set_color(c_white);
+    surface_reset_target();
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
@@ -344,8 +377,9 @@ if gamepad_is_connected(0) &amp;&amp; !gameManager.buildMode {
 }
 
 // boxes
-draw_sprite(ui_pause, 0, 960, 0);
-draw_sprite(ui_lower, 0, 0, 540);
+draw_sprite(ui_pause, 0, window_get_width(), 0);
+draw_sprite(ui_lower_left, 0, 0, window_get_height());
+//draw_sprite(ui_lower_right, 0, window_get_width(), window_get_height());
 draw_sprite(ui_top_left, 0, 0, 0);
 
 // money
@@ -353,22 +387,17 @@ draw_text_transformed(4, 4, "$"+string(displayedmoney), 2, 2, 0);
 
 // minimap
 if surface_exists(minimap) {
-    draw_surface(minimap, 764, 344);
-    surface_set_target(minimap)
-    draw_set_color($5CDE52);
-    draw_set_alpha(1);
-    draw_rectangle(0,0,192,192,false);
-    draw_set_color(c_white);
-    surface_reset_target();
+    // draw minimap
+    //draw_surface(minimap, window_get_width()-196, window_get_height()-196);
 }
 // lower left text
-draw_text_transformed(4, 540 - 156, lower_left_text, 2, 2, 0);
+draw_text_transformed(4, window_get_height() - 156, lower_left_text, 2, 2, 0);
 
 // build menu
 var ids = gameManager.buildingdata[? "ids"]
 draw_sprite(ui_construction, 0, window_get_width()/2, buildwindowy);
 for (var i = 1; i &lt; ds_list_size(ids); i++) {
-    draw_model(asset_get_index("spr_"+ids[| i]), 224+(48*(i-1)), buildwindowy-16, 45, 2);
+    draw_model(asset_get_index("spr_"+ids[| i]), window_get_width()/2-280+24+(48*(i-1)), buildwindowy-16, 45, 2);
 }
 // can't build that!
 draw_set_alpha(cantbuildalpha);

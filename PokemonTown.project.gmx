@@ -88,12 +88,14 @@
     <sprites name="UI">
       <sprites name="Building Menu">
         <sprite>sprites\ico_delete</sprite>
+        <sprite>sprites\ico_upgrade</sprite>
       </sprites>
       <sprite>sprites\ui_radialSelect</sprite>
       <sprite>sprites\ico_move</sprite>
       <sprite>sprites\ico_return</sprite>
       <sprite>sprites\ui_broke</sprite>
-      <sprite>sprites\ui_lower</sprite>
+      <sprite>sprites\ui_lower_right</sprite>
+      <sprite>sprites\ui_lower_left</sprite>
       <sprite>sprites\ui_top_left</sprite>
       <sprite>sprites\ui_pause</sprite>
       <sprite>sprites\ui_crosshair</sprite>
@@ -205,9 +207,11 @@
       <scripts name="Initialization">
         <script>scripts\init_dojo.gml</script>
         <script>scripts\init_houseSmall.gml</script>
+        <script>scripts\init_barn.gml</script>
       </scripts>
       <scripts name="Step">
         <script>scripts\step_dojo.gml</script>
+        <script>scripts\step_barn.gml</script>
       </scripts>
       <scripts name="Destruction">
         <script>scripts\destroy_dojo.gml</script>
@@ -218,6 +222,7 @@
     </scripts>
     <script>scripts\townbuildMode.gml</script>
     <script>scripts\rtsMode.gml</script>
+    <script>scripts\get_time.gml</script>
   </scripts>
   <shaders name="shaders">
     <shader type="GLSLES">shaders\shd_blur.shader</shader>
@@ -236,12 +241,6 @@
         <object>objects\obj_building</object>
         <object>objects\obj_billboard</object>
         <object>objects\obj_titlescreenModel</object>
-      </objects>
-      <objects name="Buildings">
-        <object>objects\obj_townHall</object>
-        <object>objects\obj_dojo</object>
-        <object>objects\obj_houseSmall</object>
-        <object>objects\obj_houseMedium</object>
       </objects>
       <objects name="Battlers">
         <object>objects\obj_poke</object>
