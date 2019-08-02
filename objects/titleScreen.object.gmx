@@ -88,7 +88,7 @@ if !fadeout {
                     game_end();
                 } else if sel == 1 &amp;&amp; ds_list_size(saveFiles) == 0 {
                     // no
-                    playSe(sfx_beepNo);
+                    playSE(sfx_beepNo);
                 } else {
                     playSE(sfx_beepUp);
                     scrn = sel+1;
