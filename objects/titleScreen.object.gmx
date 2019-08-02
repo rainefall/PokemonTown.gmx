@@ -88,7 +88,9 @@ if !fadeout {
                     game_end();
                 } else if sel == 1 &amp;&amp; ds_list_size(saveFiles) == 0 {
                     // no
+                    playSe(sfx_beepNo);
                 } else {
+                    playSE(sfx_beepUp);
                     scrn = sel+1;
                     // setup for new game screen
                     if scrn == NEW {
@@ -102,6 +104,7 @@ if !fadeout {
             keyboard_string = string_copy(keyboard_string, 1, 15);
         }
         if keyboard_check_pressed(vk_enter) {
+            playSE(sfx_beepUp);
             gameManager.saveFile = createWorld(keyboard_string);
             fadeoutBGM(2000);
             fadeout = true;
@@ -132,7 +135,9 @@ if !fadeout {
             if sel &gt;= 0 &amp;&amp; mouse_check_button_pressed(mb_left) {
                 if sel == 3 {
                     scrn = MAIN;
+                    playSE(sfx_beepDown);
                 } else {
+                    playSE(sfx_beepUp);
                     fadeoutBGM(2000);
                     gameManager.saveFile = loadSave(saveFiles[| sel+loadoffset]);
                     fadeout = true;
@@ -140,10 +145,14 @@ if !fadeout {
             }
         }
         
-        if mouse_wheel_up() &amp;&amp; loadoffset &gt; 0
+        if mouse_wheel_up() &amp;&amp; loadoffset &gt; 0 {
             loadoffset--;
-        if mouse_wheel_down() &amp;&amp; loadoffset &lt; ds_list_size(saveFiles)-3
+            playSE(sfx_beepScroll);
+        }
+        if mouse_wheel_down() &amp;&amp; loadoffset &lt; ds_list_size(saveFiles)-3 {
             loadoffset++;
+            playSE(sfx_beepScroll);
+        }
     } else if scrn == SETTINGS {
         var bgmw = string_width("Music Volume: ")*2+100;
         var sfxw = string_width("SFX Volume: ")*2+100;
@@ -172,6 +181,7 @@ if !fadeout {
             if mouse_check_button_pressed(mb_left) {
                 ds_map_secure_save(gameManager.settings, working_directory+"settings.dat");
                 scrn = MAIN;
+                playSE(sfx_beepDown);
             }   
         } else {
             endtimes = false;

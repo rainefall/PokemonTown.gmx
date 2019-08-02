@@ -83,6 +83,10 @@
       <sound>sound\mus_village_3</sound>
       <sound>sound\mus_night</sound>
     </sounds>
+    <sound>sound\sfx_beepUp</sound>
+    <sound>sound\sfx_beepDown</sound>
+    <sound>sound\sfx_beepNo</sound>
+    <sound>sound\sfx_beepScroll</sound>
   </sounds>
   <sprites name="sprites">
     <sprites name="UI">
@@ -158,6 +162,7 @@
       <script>scripts\fadeoutBGM.gml</script>
       <script>scripts\fadeinBGM.gml</script>
       <script>scripts\playBGS.gml</script>
+      <script>scripts\playSE.gml</script>
     </scripts>
     <scripts name="Initialization">
       <script>scripts\createLoopTable.gml</script>
