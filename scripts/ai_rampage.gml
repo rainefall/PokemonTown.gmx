@@ -16,9 +16,8 @@ if target != obj_trainer {
             //x += lengthdir_x(0.5,point_direction(x,y,target.x,target.y));
             //y += lengthdir_y(0.5,point_direction(x,y,target.x,target.y));
         }
-        // if colliding with a target take HP away from it
-        var inst; 
-        inst = collision_rectangle(x-sprite_width/2, y-sprite_height/2, x+sprite_width/2, y+sprite_height/2, target, false, true); 
+        // if colliding with a target take HP away from it 
+        var inst = collision_rectangle(x-sprite_width/2, y-sprite_height/2, x+sprite_width/2, y+sprite_height/2, target, false, true); 
         if inst != noone {
             inst.hp -= data[? "damage"] / inst.data[? "def"] * 30;
         } 

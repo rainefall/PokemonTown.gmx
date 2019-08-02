@@ -404,7 +404,7 @@ draw_set_alpha(cantbuildalpha);
 draw_text(window_mouse_get_x()-string_width(cantbuildreason)/2, window_mouse_get_y()-12, cantbuildreason);
 
 draw_set_halign(fa_center);
-draw_set_alpha(clamp(headsupalpha,0.0,1.0)*dsin(get_timer()/10000));
+draw_set_alpha(clamp(headsupalpha,0.0,1.0)*sin(get_timer()/1000000));
 draw_text_ext_transformed(window_get_width()/2,4,headsuptext,-1,256,2,2,0);
 draw_set_alpha(1);
 draw_set_halign(fa_left);

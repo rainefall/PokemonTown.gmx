@@ -27,7 +27,7 @@
             <kind>1</kind>
             <string>event_inherited();
 // actual gameplay values
-maxhp=-1;
+maxhp=1;
 hp=maxhp;
 target=noone;
 ai=ai_basic;
