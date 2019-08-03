@@ -88,10 +88,10 @@ wy = window_views_mouse_get_y();
 if !gameManager.buildingMenuActive {
     // Keyboard(move camera around)
     if keyboard_check(ord('Q')) {
-        target_direction += 2.5*move_speed
+        target_direction += 2.5*move_speed*(delta_time/20000)
     }
     if keyboard_check(ord('E')) {
-        target_direction -= 2.5*move_speed
+        target_direction -= 2.5*move_speed*(delta_time/20000)
     }
     
     // Mouse input (move camera around)
@@ -124,10 +124,10 @@ if !gameManager.buildingMenuActive {
     
     if !gameManager.buildMode {
         if gamepad_button_check(0,gp_shoulderl) {
-            target_direction += 2.5*move_speed
+            target_direction += 2.5*move_speed*(delta_time/20000)
         }
         if gamepad_button_check(0,gp_shoulderr) {
-            target_direction -= 2.5*move_speed
+            target_direction -= 2.5*move_speed*(delta_time/20000)
         }
     }
         
@@ -165,30 +165,30 @@ if !gameManager.buildingMenuActive {
     // Keyboard Input (move camera up and down)
     if keyboard_check(ord('R')) {
         if target_z &lt; 4 {
-            target_z += move_speed/64;
+            target_z += move_speed/64*(delta_time/20000);
         }
     }
     if keyboard_check(ord('F')) {
         if target_z &gt; 0.1 {
-            target_z -= move_speed/64;
+            target_z -= move_speed/64*(delta_time/20000);
         }
     }
     
     if keyboard_check(ord('D')) {
-        target_x += dcos(angle)*move_speed*z;
-        target_y += dsin(angle)*move_speed*z;
+        target_x += dcos(angle)*move_speed*z*(delta_time/20000);
+        target_y += dsin(angle)*move_speed*z*(delta_time/20000);
     }
     if keyboard_check(ord('A')) {
-        target_x -= dcos(angle)*move_speed*z;
-        target_y -= dsin(angle)*move_speed*z;
+        target_x -= dcos(angle)*move_speed*z*(delta_time/20000);
+        target_y -= dsin(angle)*move_speed*z*(delta_time/20000);
     }
     if keyboard_check(ord('S')) {
-        target_y += dcos(angle)*move_speed*z;
-        target_x -= dsin(angle)*move_speed*z;
+        target_y += dcos(angle)*move_speed*z*(delta_time/20000);
+        target_x -= dsin(angle)*move_speed*z*(delta_time/20000);
     }
     if keyboard_check(ord('W')) {
-        target_y -= dcos(angle)*move_speed*z;
-        target_x += dsin(angle)*move_speed*z;
+        target_y -= dcos(angle)*move_speed*z*(delta_time/20000);
+        target_x += dsin(angle)*move_speed*z*(delta_time/20000);
     }
     
     // Gamepad move camera up/down/left/right

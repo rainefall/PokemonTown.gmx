@@ -56,7 +56,11 @@ if !file_exists(working_directory + "settings.dat") {
 
 // check for updates
 // edit GAMEVERSION on new releases
-if os_is_network_connected() get = http_get("https://pastebin.com/raw/tWQGPhkK")
+if os_is_network_connected() {
+    get = http_get("https://pastebin.com/raw/tWQGPhkK");
+} else { 
+    room_goto(rm_titleScreen);
+}
 </string>
           </argument>
         </arguments>

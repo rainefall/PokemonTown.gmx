@@ -108,7 +108,7 @@ u_width = shader_get_uniform(shd_outline, "pixelW");
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if surface_exists(global.shadowSurface){
+            <string>if surface_exists(global.shadowSurface) &amp;&amp; gameManager.settings[? "shadows"] {
     surface_set_target(global.shadowSurface);
     draw_clear_alpha(c_white,0);
     surface_reset_target();
@@ -141,7 +141,7 @@ if surface_exists(global.objectSurface){
           <argument>
             <kind>1</kind>
             <string>if room == rm_game {
-    if surface_exists(global.shadowSurface)
+    if surface_exists(global.shadowSurface) &amp;&amp; gameManager.settings[? "shadows"]
         draw_surface_ext(global.shadowSurface,0,0,1,1,0,c_white,0.5); // draw shadows slightly transparent
     if surface_exists(global.objectSurface) {
         shader_set(shd_outline); 
